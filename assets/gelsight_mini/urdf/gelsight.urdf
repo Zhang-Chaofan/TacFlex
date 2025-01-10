@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="gelsight mini">
+        <link name="world">
+        </link>
+
+        <joint name="world_to_frame1" type="fixed">
+                <parent link="world"/>
+                <child link="frame1"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+        </joint>
+
+        <link name="frame1">
+		<visual>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                        <geometry>
+				<mesh filename="../meshes/visual/frame_part1.stl" scale="0.001 0.001 0.001"/>
+                        </geometry>
+                </visual>
+                <collision>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                        <geometry>
+				<mesh filename="../meshes/collision/frame_part1.stl" scale="0.001 0.001 0.001"/>
+                        </geometry>
+                </collision>
+                <!-- <inertial>
+                        <origin rpy="0.0 0.0 0.0" xyz="-5.76186e-3 -0.78412e-3 0.00005e-3"/>
+                        <mass value="0.00165412"/>
+                        <inertia ixx="0.01956e-6" iyy="0.08665e-6" izz="0.08404e-6" ixy="0.0021e-6" ixz="0.0" iyz="0.0"/>
+                </inertial> -->
+	</link>
+
+        <joint name="frame1_to_frame2" type="fixed">
+                <parent link="frame1"/>
+                <child link="frame2"/>
+                <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+        </joint>
+
+        <link name="frame2">
+		<visual>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                        <geometry>
+				<mesh filename="../meshes/visual/frame_part2.stl" scale="0.001 0.001 0.001"/>
+                        </geometry>
+                </visual>
+                <collision>
+                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+                        <geometry>
+				<mesh filename="../meshes/collision/frame_part2.stl" scale="0.001 0.001 0.001"/>
+                        </geometry>
+                </collision>
+                <!-- <inertial>
+                        <origin rpy="0.0 0.0 0.0" xyz="-5.76186e-3 -0.78412e-3 0.00005e-3"/>
+                        <mass value="0.00165412"/>
+                        <inertia ixx="0.01956e-6" iyy="0.08665e-6" izz="0.08404e-6" ixy="0.0021e-6" ixz="0.0" iyz="0.0"/>
+                </inertial> -->
+	</link>
+
+
+	<joint name="frame2_to_gel" type="fixed">
+		<parent link="frame2"/>
+		<child link="gel"/>
+		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+	</joint>
+
+        <link name="gel">
+                <fem>
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+			<density value="1000"/>
+			<youngs value="1e5"/>
+			<poissons value="0.3223"/>
+			<damping value="0.0"/>
+			<attachDistance value="1.0e-5"/>
+                        <!-- <attachDistance value="0.01"/> -->
+			<tetmesh filename="../meshes/collision/gelsight_gel_0.2.tet"/>
+                        <scale value="0.001"/>
+		</fem>
+        </link>
+</robot>

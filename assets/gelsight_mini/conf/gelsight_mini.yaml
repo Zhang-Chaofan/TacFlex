@@ -1,0 +1,41 @@
+# all positions and orientations are expressed in sensor frame
+
+
+camera:
+  position: [0, 0, 9.0]  # in mm
+  orientation: [0,0,0]  # Euler angles, "xyz", in degrees; e.g. [0, 0, 0]: towards negative z-axis in pyrender
+  resolution: [320, 240]
+  fx: 258.342891856818
+  fy: 258.282322464436
+  cx: 161.066077758039
+  cy: 118.750670323980
+
+
+lights:
+  type: Spot  # Directional or Spot in pyrender
+  positions: [[0, -14.0, 18], [16.0, 0, 18], [0, 14.0, 18]]
+  orientations: [[90, 0, 0], [0, 90, 0], [-90, 0, 0]]   # Euler angles, "xyz"
+  colors: [[1.0, 0, 0.0], [0, 1.0, 0], [0, 0, 1.0]]
+  intensities: [1725, 1725, 1725]
+  angles: [63, 63, 63]  # in degrees
+
+
+surface:
+  mesh: assets/gelsight_mini/texture_surface_mesh0.2/surface_texture_refract_marker.obj
+  meshWoMarker: assets/gelsight_mini/texture_surface_mesh0.2/surface_texture_refract.obj
+  surfaceIdx: assets/gelsight_mini/texture_surface_mesh0.2/surface_index_mesh.npy
+
+backgroundReal: assets/gelsight_mini/texture_surface_mesh0.2/wo_marker.png
+
+
+refraction:  # refraction effects
+  rpp: assets/gelsight_mini/refraction_effect/center_point.npy
+  model: assets/gelsight_mini/refraction_effect/refract_reg_model.joblib
+
+
+pcd:  # 3D point clouds
+  initPoints: None
+
+
+
+

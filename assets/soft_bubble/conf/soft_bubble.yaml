@@ -1,0 +1,39 @@
+# all positions and orientations are expressed in sensor frame
+
+
+camera:
+  position: [0, 0, 0]  # in mm
+  orientation: [0,0,0]  # Euler angles, "xyz", in degrees; e.g. [0, 0, 0]: towards negative z-axis in pyrender
+  resolution: [640,480]
+  fx: 550
+  fy: 550
+  cx: 320
+  cy: 240
+
+
+
+lights:
+  type: Directional  # Directional or Spot in pyrender
+  positions: [[0, 0, 10]]
+  orientations: [ [180,0,0]]   # Euler angles, "xyz"
+  colors: [[1.0, 1.0, 1.0]]
+  intensities: [10.0]
+
+
+surface:
+  mesh: assets/soft_bubble/texture_surface_wo_refract/surface_texture.obj
+  surfaceIdx: assets/soft_bubble/texture_surface_wo_refract/surface_indexs_stl.npy
+
+
+refraction:  # refraction effects
+  flag: False
+
+
+
+
+pcd:  # 3D point clouds
+  initPoints: None
+
+
+
+

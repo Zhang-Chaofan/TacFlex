@@ -1,0 +1,41 @@
+# all positions and orientations are expressed in sensor frame
+
+
+camera:
+  position: [-3.25, 0, -0.08326431999999995]  # in mm
+  orientation: [0,0,0]  # Euler angles, "xyz", in degrees; e.g. [0, 0, 0]: towards negative z-axis in pyrender
+  resolution: [1280, 720]
+  fx: 651.548223352180
+  fy: 652.019324596496
+  cx: 598.560290483934
+  cy: 377.087426234494
+
+
+
+lights:
+  type: Directional  # Directional or Spot in pyrender
+  positions: [[-15.,   0.,  27.], [  0., -15.,  27.], [15.,  0., 27.], [ 0., 15., 27.], [ 0.,  0., 15.]]
+  orientations: [[-180, 90, 0], [90,0,0], [180,-90,0], [-90, 0,0], [180,0,0]]   # Euler angles, "xyz"
+  colors: [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
+  intensities: [2.11, 2.11, 2.11, 2.11, 10.15]
+
+
+surface:
+  mesh: assets/gelstereo/texture_surface_mesh0.2/surface_texture_refract.obj
+  surfaceIdx: assets/gelstereo/texture_surface_mesh0.2/surface_index_mesh.npy
+
+
+refraction:  # refraction effects
+  rpp: assets/gelstereo/refraction_effect/center_point.npy
+  model: assets/gelstereo/refraction_effect/refract_reg_model.joblib
+
+
+
+pcd:  # 3D point clouds
+  initPoints: assets/gelstereo/marker_mapping/init_3d_points.npy
+  barycentricCoords: assets/gelstereo/marker_mapping/barycentric_coords_mesh0.2.txt
+  verticesIdx: assets/gelstereo/marker_mapping/vertices_idx_mesh0.2.txt
+
+
+
+

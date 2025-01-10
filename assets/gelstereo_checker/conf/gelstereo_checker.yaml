@@ -1,0 +1,38 @@
+# all positions and orientations are expressed in sensor frame
+
+
+camera:
+  position: [-3.25, 0, 0.66]  # in mm
+  orientation: [0,0,0]  # Euler angles, "xyz", in degrees; e.g. [0, 0, 0]: towards negative z-axis in pyrender
+  resolution: [1280, 720]
+  fx: 647.582888486610
+  fy: 647.397860419701
+  cx: 595.165469619489
+  cy: 374.078398804960
+
+
+
+lights:
+  type: Directional  # Directional or Spot in pyrender
+  positions: [[-15.,   0.,  27.], [  0., -15.,  27.], [15.,  0., 27.], [ 0., 15., 27.], [ 0.,  0., 15.]]
+  orientations: [[-180, 90, 0], [90,0,0], [180,-90,0], [-90, 0,0], [180,0,0]]   # Euler angles, "xyz"
+  colors: [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
+  intensities: [2.82, 2.82, 2.82, 2.82, 11.62]
+
+
+surface:
+  mesh: assets/gelstereo_checker/texture_surface_mesh0.2/surface_texture_refract.obj
+  surfaceIdx: assets/gelstereo_checker/texture_surface_mesh0.2/surface_index_mesh.npy
+
+
+refraction:  # refraction effects
+  rpp: assets/gelstereo_checker/refraction_effect/center_point.npy
+  model: assets/gelstereo_checker/refraction_effect/refract_reg_model.joblib
+
+
+pcd:  # 3D point clouds
+  initPoints: None
+
+
+
+
