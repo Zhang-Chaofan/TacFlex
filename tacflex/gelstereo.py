@@ -54,7 +54,7 @@ class GelStereoSim(BaseSensorSim):
         light_colors = self.cfg['lights']['colors']
         light_intensities = self.cfg['lights']['intensities']
 
-        print(type(light_positions))
+        # print(type(light_positions))
 
         for i in range(len(light_positions)):
             light_pose = np.array([[1, 0, 0, 0],
