@@ -6,7 +6,8 @@ import trimesh
 import joblib
 import pyrender
 import copy
-# from sklearn.preprocessing import PolynomialFeatures
+
+
 
 class BaseSensorSim:
     def __init__(self, config_path):
@@ -86,12 +87,68 @@ class BaseSensorSim:
         return cv2.cvtColor(color1, cv2.COLOR_RGB2BGR), depth1
     
 
-    def rectify_img(self, img_wo_refract, depth):
-        pass
-    
+    def init_rectify(self, u_min=0, u_max=640, v_min=0, v_max=480):
 
-    def render_rectified_img(self, ):
-        pass
+        u, v = np.meshgrid(np.arange(u_min, u_max), np.arange(v_min, v_max))
+        self.source_coords = np.vstack((u.flatten(), v.flatten())).T
+        self.dist_center_wo_refract = np.linalg.norm(self.source_coords - self.refraction_rpp, axis=-1).astype(np.float32)
+        self.center_source_uvec = (self.source_coords - self.refraction_rpp) / (np.linalg.norm(self.source_coords - self.refraction_rpp, axis=-1, keepdims=True) + 1e-20)
+        self.rectify_poly = np.ones((self.dist_center_wo_refract.shape[0], 10), dtype=np.float32)
+        self.rectify_poly[:, 1] = self.dist_center_wo_refract
+        self.rectify_poly[:, 3] = self.dist_center_wo_refract ** 2
+        self.rectify_poly[:, 6] = self.dist_center_wo_refract ** 3
+        self.image_roi_range = [u_min, u_max, v_min, v_max]
+
+
+    def rectify_img(self, img_wo_refract, depth):
+        '''
+        image transformation from image without refraction to image under multi-medium refraction 
+        :param img_wo_refract: the tactile image without refrection effects, e.g., pyrender output
+        :param depth: the depth image 
+        :return: the tactile image under multi-medium refraction 
+        '''
+        u_min, u_max, v_min, v_max = self.image_roi_range[0], self.image_roi_range[1], self.image_roi_range[2], self.image_roi_range[3]
+        target_img_roi = np.zeros((v_max-v_min, u_max-u_min, 3)).astype(np.uint8)
+
+        depth[depth == 0] = depth.max()
+        depth = depth[v_min:v_max, u_min:u_max].reshape(-1)
+
+        self.rectify_poly[:, 2] = depth
+        self.rectify_poly[:, 4] = self.dist_center_wo_refract * depth
+        self.rectify_poly[:, 5] = depth ** 2
+        self.rectify_poly[:, 7] = self.dist_center_wo_refract ** 2 * depth
+        self.rectify_poly[:, 8] = self.dist_center_wo_refract * depth ** 2
+        self.rectify_poly[:, 9] = depth ** 3
+
+        diff_w_wo_refract = self.refraction_model.predict(self.rectify_poly)
+
+        target_coords = self.source_coords + np.expand_dims(diff_w_wo_refract, axis=-1) * self.center_source_uvec
+
+        _u = np.around(target_coords[:, 0]).astype(np.int32) - u_min
+        _v = np.around(target_coords[:, 1]).astype(np.int32) - v_min
+
+        _u = np.clip(_u, 0, u_max-u_min-1)
+        _v = np.clip(_v, 0, v_max-v_min-1)
+
+        target_img_roi[_v, _u] = img_wo_refract[self.source_coords[:,1], self.source_coords[:,0]]
+
+        mask = (target_img_roi == 0).astype(np.uint8)
+        kernel = np.ones((2,2), np.uint8)
+        dil_img = cv2.dilate(target_img_roi, kernel, iterations=1)
+        target_img_roi[mask == 1] = dil_img[mask == 1]
+        target_img_blur = cv2.blur(target_img_roi, ksize=(3,3))
+        target_img_roi[mask == 1] = target_img_blur[mask == 1]
+
+        target_img = np.ones((self.cam_resolution[1], self.cam_resolution[0], 3)).astype(np.uint8) * 255
+        target_img[v_min:v_max, u_min:u_max] = target_img_roi
+        return target_img
+
+  
+
+    def render_rectified_img(self, nodes):
+        rgb, depth = self.render_img(nodes)
+        image = self.rectify_img(rgb, depth)
+        return image
 
 
     def extract_3d_markers(self, nodes):

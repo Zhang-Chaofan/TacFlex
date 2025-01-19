@@ -111,4 +111,10 @@ class GelSightMiniSim(BaseSensorSim):
         color = np.clip((diff[:, :, :3] + self.background_real), 0, 255).astype(np.uint8)
 
         return color
+    
 
+    def render_gelsight_img(self, nodes, _background_sim):
+        rgb, depth = self.render_img(nodes)
+        image = self.rectify_img(rgb, depth)
+        image = self.post_process(image, _background_sim)
+        return image

@@ -9,16 +9,10 @@ sys.path.insert(0, parentdir)
 sys.path.insert(0, grandpaeentdir) 
 
 import argparse
-import copy
-import fileinput
-import h5py
 import numpy as np
 np.set_printoptions(precision=6)
 import os
 import cv2
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('TkAgg')
 from scipy.spatial.transform import Rotation as R
 
 from isaacgym import gymapi
@@ -51,6 +45,7 @@ def main():
 
     ## init gelsight sensor
     sim_gelsight = GelSightMiniSim(config_path='assets/gelsight_mini/conf/gelsight_mini.yaml')
+    sim_gelsight.init_rectify(u_min=0, u_max=320, v_min=0, v_max=240)
 
 
     gym = gymapi.acquire_gym()
@@ -94,7 +89,7 @@ def main():
 
 
     # # Run simulation loop
-    for _ in range(30):
+    for _ in range(40):
         # Run simulation
         gym.simulate(sim)
         gym.fetch_results(sim, True)
@@ -137,7 +132,7 @@ def main():
     # generate init background
     nodal_coords = extract_nodal_coords(gym, sim, particle_states=particle_state_tensor)
     _background_sim, depth = sim_gelsight.render_img_wo_marker(nodes=nodal_coords[0] * 1000)
-    # _background_sim = sim_gelsight.rectify_img(img_wo_refract=_background_sim_wo_refract, depth=depth, )
+    _background_sim = sim_gelsight.rectify_img(img_wo_refract=_background_sim, depth=depth)
 
 
     while not gym.query_viewer_has_closed(viewer):
@@ -189,11 +184,8 @@ def main():
             ## image render
             if render_img_flag:
                 for i in range(num_envs):
-                    img, depth = sim_gelsight.render_img(nodes=nodal_coords[i]*1000)
-                    # img_refract = sim_gelsight.rectify_img(img_wo_refract=img, depth=depth,)
-                    img_post = sim_gelsight.post_process(img, _background_sim=_background_sim)
-
-                    cv2.imshow('image', img_post)
+                    image = sim_gelsight.render_gelsight_img(nodes=nodal_coords[i]*1000, _background_sim=_background_sim)
+                    cv2.imshow('image', image)
                     cv2.waitKey(1)
 
 

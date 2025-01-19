@@ -55,22 +55,25 @@ def main():
     ## init tactile sensor
     if args.pattern == 'marker':
         sim_gelstereo = GelStereoSim(config_path='assets/gelstereo/conf/gelstereo.yaml')
+        sim_gelstereo.init_rectify(u_min=370, u_max=980, v_min=70, v_max=680)
         gelstereo_urdf_dir = "assets/gelstereo/urdf"   #
-        u_min, u_max, v_min, v_max = 390, 950, 90, 650
+        u_min, u_max, v_min, v_max = 380, 975, 75, 670
     elif args.pattern == 'checker':
         sim_gelstereo = GelStereoSim(config_path='assets/gelstereo_checker/conf/gelstereo_checker.yaml')
+        sim_gelstereo.init_rectify(u_min=370, u_max=980, v_min=70, v_max=680)
         gelstereo_urdf_dir = "assets/gelstereo_checker/urdf"   # 
         if sim_pcd_flag:
             print('Warning!!! GelStereo 2.0 with checkerboard pattern does not have 3D point clouds. The VISUAL_MARKER is set to False.')
             sim_pcd_flag = False
-        u_min, u_max, v_min, v_max = 390, 930, 110, 650
+        u_min, u_max, v_min, v_max = 370, 960, 85, 675
     elif args.pattern == 'random':
         sim_gelstereo = GelStereoSim(config_path='assets/gelstereo_random/conf/gelstereo_random.yaml')
+        sim_gelstereo.init_rectify(u_min=330, u_max=960, v_min=90, v_max=710)
         gelstereo_urdf_dir = "assets/gelstereo_random/urdf"   # 
         if sim_pcd_flag:
             print('Warning!!! GelStereo 2.0 with random color pattern does not have 3D point clouds. The VISUAL_MARKER is set to False.')
             sim_pcd_flag = False
-        u_min, u_max, v_min, v_max = 360, 910, 120, 670
+        u_min, u_max, v_min, v_max = 345, 945, 100, 700
     else:
         print(args.pattern, 'is not available!')
         exit()
@@ -246,10 +249,8 @@ def main():
             if render_img_flag:
                 for i in range(num_envs):
 
-                    imgL, depthL = sim_gelstereo.render_img(nodes=nodal_coords[i]*1000)
-
-                    # imgL_refract = sim_gelstereo.rectify_img(imgL, depthL)
-                    cv2.imshow('tactile image', imgL[v_min:v_max, u_min:u_max]) 
+                    img_refract = sim_gelstereo.render_rectified_img(nodes=nodal_coords[i]*1000)
+                    cv2.imshow('tactile image', img_refract[v_min:v_max, u_min:u_max]) 
                     cv2.waitKey(1)
 
             ## set next indenter target
