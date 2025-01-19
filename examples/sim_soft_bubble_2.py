@@ -73,7 +73,7 @@ def createScene(rootNode):
     bubble.addObject('EulerImplicitSolver', rayleighStiffness=0.1, rayleighMass=0.1)
     bubble.addObject('SparseLDLSolver', template='CompressedRowSparseMatrixd')
 
-    bubble.addObject('MeshVTKLoader', name='loader', filename='assets/soft_bubble/meshes/body_shell_4.vtk')
+    bubble.addObject('MeshVTKLoader', name='loader', filename='assets/soft_bubble/meshes/body_shell_5.vtk')
     bubble.addObject('MeshTopology', src='@loader', name='container')
     bubble.addObject('MechanicalObject', name='tetras', template='Vec3', showObject=False, showObjectScale=1)
     bubble.addObject('TetrahedronFEMForceField', template='Vec3', name='FEM', method='large', poissonRatio=0.41,
@@ -88,7 +88,7 @@ def createScene(rootNode):
 
 
     cavity = bubble.addChild('Cavity')
-    cavity.addObject('MeshSTLLoader', name='cavityLoader', filename='assets/soft_bubble/meshes/cavity.stl')  # NOTE
+    cavity.addObject('MeshSTLLoader', name='cavityLoader', filename='assets/soft_bubble/meshes/cavity_4.stl')  # NOTE
     cavity.addObject('MeshTopology', src='@cavityLoader', name='cavityMesh')
     cavity.addObject('MechanicalObject', name='MechCavity', template='Vec3d')
     cavity.addObject('SurfacePressureConstraint', name='SurfacePressureConstraint', template='Vec3', value=0.0002,
@@ -171,7 +171,8 @@ class Controller(Sofa.Core.Controller):
         ## ----------------------------------
 
         ## init tactile sensor
-        self.sim_soft_bubble = SoftBubbleSim(config_path='assets/soft_bubble/conf/soft_bubble.yaml')
+        self.sim_soft_bubble = SoftBubbleSim(config_path='assets/soft_bubble/conf/soft_bubble_w_refract.yaml')
+        self.sim_soft_bubble.init_rectify(u_min=0, u_max=640, v_min=0, v_max=480)
         ## -------------
 
         self.motion_path = create_linear_motion(target_position=np.array(target_position), dt=0.1,
@@ -205,14 +206,8 @@ class Controller(Sofa.Core.Controller):
             else:
                 self.node.animate = False
 
-        color, depth = self.sim_soft_bubble.render_img(nodes=self.cavity_state.position.value)
-        cv2.imshow('rgb image', color)
-
-        depth_min = 75
-        depth_max = 140
-        depth_norm = 255 - (depth - depth_min) / (depth_max - depth_min) * 255
-        depth_norm = depth_norm.astype(np.uint8)
-        cv2.imshow('depth image', depth_norm)
+        image = self.sim_soft_bubble.render_rectified_img(nodes=self.cavity_state.position.value)
+        cv2.imshow('rgb image', image)
         cv2.waitKey(1)
 
 
